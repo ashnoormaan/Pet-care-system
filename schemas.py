@@ -1,6 +1,7 @@
+
 from pydantic import BaseModel
 
-# User Schema
+# 🔹 User Schema
 class UserCreate(BaseModel):
     username: str
     password: str
@@ -10,19 +11,16 @@ class UserResponse(BaseModel):
     username: str
 
     class Config:
-        orm_mode = True
+        from_attributes = True  # ✅ Pydantic v2 fix (Replaces orm_mode)
 
-# Pet Schema
+# 🔹 Pet Schema
 class PetCreate(BaseModel):
     name: str
-    owner_id: int
-    pet_type: str
+    pet_type: str  # ✅ Keep only name and pet_type
 
-class PetResponse(BaseModel):
+class PetResponse(PetCreate):
     id: int
-    name: str
     owner_id: int
-    pet_type: str
 
     class Config:
-        orm_mode = True
+        from_attributes = True
