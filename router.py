@@ -2,11 +2,12 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from fastapi.security import OAuth2PasswordBearer
 from database import SessionLocal
-from schemas import UserCreate, UserResponse, PetCreate, PetResponse, CaregiverResponse, CaregiverCreate, BookingCreate, BookingResponse, ReviewResponse, ReviewCreate
+from schemas import UserCreate, UserResponse, PetCreate, PetResponse, CaregiverResponse, CaregiverCreate, BookingCreate, BookingResponse, ReviewResponse, ReviewCreate, HealthRecordCreate, HealthRecordResponse
 from crud import create_user, create_pet, get_user, get_pets, update_expired_availability
 from auth import create_access_token, verify_password, verify_access_token
-from crud import adopt_pet, create_booking, create_caregiver, get_bookings, get_caregivers, get_reviews_by_caregiver, create_review
+from crud import adopt_pet, create_booking, create_caregiver, get_bookings, get_caregivers, get_reviews_by_caregiver, create_review, create_health_record
 from models import User, Caregiver  # ✅ Ensure User model is imported 
+
 
 router = APIRouter()
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login")
@@ -150,3 +151,7 @@ def submit_review(review: ReviewCreate, db: Session = Depends(get_db), token: di
 @router.get("/caregivers/reviews", response_model=list[ReviewResponse])
 def get_caregiver_reviews(caregiver_id: int, db: Session = Depends(get_db)):
     return get_reviews_by_caregiver(db, caregiver_id)
+
+@router.post("/pets/health_records", response_model=HealthRecordResponse)
+def add_health_record(pet_id: int, health_data: HealthRecordCreate, db: Session = Depends(get_db), current_user: dict = Depends(get_current_user)):
+    return create_health_record(db, pet_id, health_data)

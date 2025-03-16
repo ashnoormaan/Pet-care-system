@@ -1,8 +1,8 @@
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import IntegrityError
 from auth import hash_password
-from models import User, Pet, Caregiver, Booking, Review
-from schemas import PetCreate, CaregiverCreate, BookingCreate, ReviewCreate
+from models import User, Pet, Caregiver, Booking, Review, HealthRecord
+from schemas import PetCreate, CaregiverCreate, BookingCreate, ReviewCreate,  HealthRecordCreate
 from fastapi import HTTPException
 from datetime import datetime
 
@@ -161,3 +161,22 @@ def create_review(db: Session, owner_id: int, review_data: ReviewCreate):
 
 def get_reviews_by_caregiver(db: Session, caregiver_id: int):
     return db.query(Review).filter(Review.caregiver_id == caregiver_id).all()
+
+def create_health_record(db: Session, pet_id: int, health_data: HealthRecordCreate):
+    db_health_record = HealthRecord(
+        pet_id=pet_id,
+        age_years=health_data.age_years,
+        age_months=health_data.age_months,
+        health_conditions=health_data.health_conditions,
+        allergies=health_data.allergies,
+        last_vaccination_date=health_data.last_vaccination_date,
+        vaccine_type=health_data.vaccine_type,
+        medications=health_data.medications,
+        vet_name=health_data.vet_name,
+        vet_contact=health_data.vet_contact,
+        last_checkup_date=health_data.last_checkup_date
+    )
+    db.add(db_health_record)
+    db.commit()
+    db.refresh(db_health_record)
+    return db_health_record

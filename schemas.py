@@ -1,6 +1,6 @@
 from pydantic import BaseModel, ConfigDict
 from typing import Optional
-from datetime import datetime
+from datetime import datetime, date
 
 # 🔹 User Schema
 class UserCreate(BaseModel):
@@ -73,4 +73,22 @@ class ReviewResponse(BaseModel):
     # class Config:
     #     from_attributes = True
     model_config = ConfigDict(from_attributes=True, arbitrary_types_allowed=True)
-        
+
+class HealthRecordCreate(BaseModel):
+    age_years: Optional[int] = None
+    age_months: Optional[int] = None
+    health_conditions: Optional[str] = None
+    allergies: Optional[str] = None
+    last_vaccination_date: Optional[date] = None
+    vaccine_type: Optional[str] = None
+    medications: Optional[str] = None
+    vet_name: Optional[str] = None
+    vet_contact: Optional[str] = None
+    last_checkup_date: Optional[date] = None
+
+class HealthRecordResponse(HealthRecordCreate):
+    id: int
+    pet_id: int
+
+    class Config:
+        from_attributes = True

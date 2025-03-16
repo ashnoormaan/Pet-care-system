@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, Boolean, ForeignKey, DateTime, Text
+from sqlalchemy import Column, Integer, String, Boolean, ForeignKey, DateTime, Text, Date
 from sqlalchemy.orm import relationship
 from database import Base
 from datetime import datetime
@@ -22,6 +22,7 @@ class Pet(Base):
     owner_id = Column(Integer, ForeignKey("users.id"))
 
     owner = relationship("User", back_populates="pets")
+    health_record = relationship("HealthRecord", back_populates="pet", uselist=False, cascade="all, delete-orphan")
 
 class Caregiver(Base):
     __tablename__ = "caregivers"
@@ -61,3 +62,23 @@ class Review(Base):
 
     owner = relationship("User", back_populates="reviews")
     caregiver = relationship("Caregiver", back_populates="reviews")
+
+class HealthRecord(Base):
+    __tablename__ = "health_records"
+    __table_args__ = {"extend_existing": True} 
+
+    id = Column(Integer, primary_key=True, index=True)
+    pet_id = Column(Integer, ForeignKey("pets.id"), unique=True)
+
+    age_years = Column(Integer, nullable=True)
+    age_months = Column(Integer, nullable=True)
+    health_conditions = Column(String, nullable=True)
+    allergies = Column(String, nullable=True)
+    last_vaccination_date = Column(Date, nullable=True)
+    vaccine_type = Column(String, nullable=True)
+    medications = Column(String, nullable=True)
+    vet_name = Column(String, nullable=True)
+    vet_contact = Column(String, nullable=True)
+    last_checkup_date = Column(Date, nullable=True)
+
+    pet = relationship("Pet", back_populates="health_record")

@@ -24,9 +24,9 @@ threading.Thread(target=run_expiry_updates, daemon=True).start()
 # Include all routes
 app.include_router(router)
 
-# @app.get("/")
-# def home():
-#     return {"message": "Welcome to the Pet Care API"}
+@app.get("/")
+def home():
+    return {"message": "Welcome to the Pet Care API"}
 
 if __name__ == "__main__":
     import uvicorn
