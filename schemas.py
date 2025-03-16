@@ -1,5 +1,6 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 from typing import Optional
+from datetime import datetime
 
 # 🔹 User Schema
 class UserCreate(BaseModel):
@@ -55,3 +56,21 @@ class BookingResponse(BookingCreate):
 
     class Config:
         from_attributes = True
+
+class ReviewCreate(BaseModel):
+    caregiver_id: int
+    rating: int
+    comment: str
+
+class ReviewResponse(BaseModel):
+    id: int
+    owner_id: int
+    caregiver_id: int
+    rating: int
+    comment: str
+    created_at: datetime  # Ensure it's imported correctly
+
+    # class Config:
+    #     from_attributes = True
+    model_config = ConfigDict(from_attributes=True, arbitrary_types_allowed=True)
+        

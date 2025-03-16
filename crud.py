@@ -1,8 +1,8 @@
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import IntegrityError
 from auth import hash_password
-from models import User, Pet, Caregiver, Booking
-from schemas import PetCreate, CaregiverCreate, BookingCreate
+from models import User, Pet, Caregiver, Booking, Review
+from schemas import PetCreate, CaregiverCreate, BookingCreate, ReviewCreate
 from fastapi import HTTPException
 from datetime import datetime
 
@@ -141,3 +141,23 @@ def update_expired_availability(db):
                 booking.status = "expired"
 
     db.commit()
+
+
+def create_review(db: Session, owner_id: int, review_data: ReviewCreate):
+    if review_data.rating < 1 or review_data.rating > 5:
+        raise HTTPException(status_code=400, detail="Rating must be between 1 and 5")
+
+    new_review = Review(
+        owner_id=owner_id,
+        caregiver_id=review_data.caregiver_id,
+        rating=review_data.rating,
+        comment=review_data.comment,
+    )
+
+    db.add(new_review)
+    db.commit()
+    db.refresh(new_review)
+    return new_review
+
+def get_reviews_by_caregiver(db: Session, caregiver_id: int):
+    return db.query(Review).filter(Review.caregiver_id == caregiver_id).all()

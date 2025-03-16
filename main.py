@@ -4,11 +4,11 @@ from database import engine, Base, SessionLocal  # ✅ Import Base here
 import threading
 import time
 from crud import update_expired_availability
-from database import initialize_database
 
 app = FastAPI()
 # Ensure database schema is updated
 # Base.metadata.create_all(engine)
+Base.metadata.create_all(bind=engine)
 
 def run_expiry_updates():
     """Runs expired availability check every 5 minutes."""
@@ -24,9 +24,9 @@ threading.Thread(target=run_expiry_updates, daemon=True).start()
 # Include all routes
 app.include_router(router)
 
-@app.get("/")
-def home():
-    return {"message": "Welcome to the Pet Care API"}
+# @app.get("/")
+# def home():
+#     return {"message": "Welcome to the Pet Care API"}
 
 if __name__ == "__main__":
     import uvicorn

@@ -1,16 +1,17 @@
-from sqlalchemy import Column, Integer, String, Boolean, ForeignKey
+from sqlalchemy import Column, Integer, String, Boolean, ForeignKey, DateTime, Text
 from sqlalchemy.orm import relationship
 from database import Base
-import datetime
+from datetime import datetime
 
 class User(Base):
     __tablename__ = "users"
 
     id = Column(Integer, primary_key=True, index=True)
-    username = Column(String, unique=True, index=True, nullable=False)
+    username = Column(String, unique=True, index=True)
     hashed_password = Column(String, nullable=False)
 
     pets = relationship("Pet", back_populates="owner")
+    reviews = relationship("Review", back_populates="owner")
 
 class Pet(Base):
     __tablename__ = "pets"
@@ -33,6 +34,7 @@ class Caregiver(Base):
 
     # ✅ Fix conflicting relationships with overlaps
     bookings = relationship("Booking", back_populates="caregiver", overlaps="caregiver")
+    reviews = relationship("Review", back_populates="caregiver") 
 
 class Booking(Base):
     __tablename__ = "bookings"
@@ -47,3 +49,15 @@ class Booking(Base):
 
     caregiver = relationship("Caregiver", back_populates="bookings", overlaps="bookings")
 
+class Review(Base):
+    __tablename__ = "reviews"
+
+    id = Column(Integer, primary_key=True, index=True)
+    owner_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+    caregiver_id = Column(Integer, ForeignKey("caregivers.id"), nullable=False)
+    rating = Column(Integer, nullable=False)
+    comment = Column(Text, nullable=True)
+    created_at = Column(DateTime, default=datetime.utcnow)
+
+    owner = relationship("User", back_populates="reviews")
+    caregiver = relationship("Caregiver", back_populates="reviews")

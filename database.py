@@ -14,4 +14,4 @@ def initialize_database():
     if os.path.exists("petcare.db"):
         os.remove("petcare.db")  # Delete old database
     Base.metadata.create_all(bind=engine)
-
+    
