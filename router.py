@@ -2,12 +2,11 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from fastapi.security import OAuth2PasswordBearer
 from database import SessionLocal
-from schemas import UserCreate, UserResponse, PetCreate, PetResponse
-from crud import create_user, create_pet, get_user, get_pets
+from schemas import UserCreate, UserResponse, PetCreate, PetResponse, CaregiverResponse, CaregiverCreate, BookingCreate, BookingResponse
+from crud import create_user, create_pet, get_user, get_pets, update_expired_availability
 from auth import create_access_token, verify_password, verify_access_token
-from crud import adopt_pet
-from models import User  # ✅ Ensure User model is imported
-
+from crud import adopt_pet, create_booking, create_caregiver, get_bookings, get_caregivers
+from models import User, Caregiver  # ✅ Ensure User model is imported 
 
 router = APIRouter()
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login")
@@ -114,3 +113,31 @@ def adopt_pet_route(
         raise HTTPException(status_code=401, detail="Invalid authentication")
 
     return adopt_pet(db, user_id, pet)
+
+@router.post("/caregivers", response_model=CaregiverResponse)
+def register_caregiver(caregiver: CaregiverCreate, db: Session = Depends(get_db)):
+    return create_caregiver(db, caregiver)
+
+
+# 🔹 List Available Caregivers
+@router.get("/caregivers")
+def list_caregivers(db: Session = Depends(get_db)):
+    return get_caregivers(db)
+
+
+# 🔹 Create a Booking
+@router.post("/bookings/", response_model=BookingResponse)
+def book_caregiver(booking: BookingCreate, db: Session = Depends(get_db)):
+    return create_booking(db, booking)
+
+
+# 🔹 List All Bookings
+@router.get("/bookings/", response_model=list[BookingResponse])
+def list_bookings(db: Session = Depends(get_db)):
+    return get_bookings(db)
+
+@router.post("/update_expired/")
+def update_expired(db: Session = Depends(get_db)):
+    """Manually trigger expiry update."""
+    update_expired_availability(db)
+    return {"message": "Expired caregivers and bookings updated"}
