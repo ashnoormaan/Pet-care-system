@@ -11,6 +11,8 @@ Users can **register, log in** and view their pets.
 - **Testing with Pytest**
 - **API Documentation** (OpenAPI & Swagger)
 - **Adopt pets** (A user can not adopt more than 2 pets)
+- **Register as a caregiver** (You can specify the type of pets that you are willing to take care of)
+- **Book caregivers** (As a pet owner you can book a caregiver for your pet)
 ---
 
 ## 🛠️ Tech Stack
@@ -41,4 +43,4 @@ poetry shell
 4️⃣ Run the API
 python main.py
 
-API will be available at: http://127.0.0.1:8000/docs
+API will be available at: http://127.0.0.1:8080/docs
