@@ -10,7 +10,7 @@ Users can **register, log in** and view their pets.
 - **Database Integration** (SQLAlchemy with SQLite/PostgreSQL)
 - **Testing with Pytest**
 - **API Documentation** (OpenAPI & Swagger)
-
+- **Adopt pets** (A user can not adopt more than 2 pets)
 ---
 
 ## 🛠️ Tech Stack
