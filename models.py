@@ -65,10 +65,14 @@ class Review(Base):
     __tablename__ = "reviews"
 
     id = Column(Integer, primary_key=True, index=True)
-    owner_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
-    caregiver_id = Column(Integer, ForeignKey("caregivers.id", ondelete="CASCADE"), nullable=False)
+    caregiver_id = Column(Integer, ForeignKey("caregivers.id"), nullable=False)
+    owner_id = Column(Integer, ForeignKey("users.id"), nullable=False)
     rating = Column(Integer, nullable=False)
-    comment = Column(Text, nullable=True)
+    comment = Column(String, nullable=False)
+    # created_at = Column(DateTime, default=datetime.utcnow)  # ✅ Ensure this exists
+
+    # caregiver = relationship("Caregiver", back_populates="reviews")
+    # owner = relationship("User", back_populates="reviews")
 
     owner = relationship("User", back_populates="reviews", passive_deletes=True)
     caregiver = relationship("Caregiver", back_populates="reviews")

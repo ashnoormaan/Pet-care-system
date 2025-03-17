@@ -110,10 +110,6 @@ current_datetime = datetime.now()
 current_date = current_datetime.date()  # Extracts YYYY-MM-DD
 current_time = current_datetime.time()  # Extracts HH:MM:SS
 
-# 🔹 Update expired caregivers and bookings
-from datetime import datetime
-
-from datetime import datetime
 
 def update_expired_availability(db):
     caregivers = db.query(Caregiver).all()
@@ -143,15 +139,38 @@ def update_expired_availability(db):
     db.commit()
 
 
-def create_review(db: Session, owner_id: int, review_data: ReviewCreate):
+# def create_review(db: Session, owner_id: int, review_data: ReviewCreate):
+#     if review_data.rating < 1 or review_data.rating > 5:
+#         raise HTTPException(status_code=400, detail="Rating must be between 1 and 5")
+
+#     new_review = Review(
+#         owner_id=owner_id,
+#         caregiver_id=review_data.caregiver_id,
+#         rating=review_data.rating,
+#         comment=review_data.comment,
+#     )
+
+#     db.add(new_review)
+#     db.commit()
+#     db.refresh(new_review)
+#     return new_review
+
+def create_review(db: Session, review_data: ReviewCreate, owner_id: int):
+    """Creates a review for a caregiver by a pet owner."""
+    
+    # Ensure review_data is an instance of ReviewCreate
+    if not isinstance(review_data, ReviewCreate):
+        raise ValueError("Invalid review data format")
+
+    # Validate rating (should be between 1 and 5)
     if review_data.rating < 1 or review_data.rating > 5:
-        raise HTTPException(status_code=400, detail="Rating must be between 1 and 5")
+        raise ValueError("Rating should be between 1 and 5")
 
     new_review = Review(
         owner_id=owner_id,
         caregiver_id=review_data.caregiver_id,
         rating=review_data.rating,
-        comment=review_data.comment,
+        comment=review_data.comment
     )
 
     db.add(new_review)
@@ -160,6 +179,7 @@ def create_review(db: Session, owner_id: int, review_data: ReviewCreate):
     return new_review
 
 def get_reviews_by_caregiver(db: Session, caregiver_id: int):
+    """Fetch all reviews for a given caregiver."""
     return db.query(Review).filter(Review.caregiver_id == caregiver_id).all()
 
 def create_health_record(db: Session, pet_id: int, health_data: HealthRecordCreate):
@@ -181,18 +201,18 @@ def create_health_record(db: Session, pet_id: int, health_data: HealthRecordCrea
     db.refresh(db_health_record)
     return db_health_record
 
-def delete_user(db: Session, user_id: int):
-    """Deletes a user and their related data from the database."""
-    user = db.query(User).filter(User.id == user_id).first()
+# def delete_user(db: Session, user_id: int):
+#     """Deletes a user and their related data from the database."""
+#     user = db.query(User).filter(User.id == user_id).first()
 
-    if not user:
-        return False  # User not found
+#     if not user:
+#         return False  # User not found
 
-    # Delete reviews first (if cascade is not working)
-    db.query(Review).filter(Review.owner_id == user_id).delete(synchronize_session=False)
+#     # Delete reviews first (if cascade is not working)
+#     db.query(Review).filter(Review.owner_id == user_id).delete(synchronize_session=False)
 
-    # Delete the user
-    db.delete(user)
-    db.commit()
+#     # Delete the user
+#     db.delete(user)
+#     db.commit()
     
-    return True
+#     return True

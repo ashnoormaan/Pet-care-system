@@ -53,4 +53,5 @@ def verify_access_token(token: str = Depends(oauth2_scheme)):
         raise HTTPException(status_code=401, detail="Token expired")
     except jwt.InvalidTokenError:
         raise HTTPException(status_code=401, detail="Invalid token")
+
     

@@ -64,15 +64,15 @@ class ReviewCreate(BaseModel):
 
 class ReviewResponse(BaseModel):
     id: int
-    owner_id: int
     caregiver_id: int
+    owner_id: int
     rating: int
     comment: str
-    created_at: datetime  # Ensure it's imported correctly
+    # created_at: datetime  # ✅ Ensure created_at is included
 
-    # class Config:
-    #     from_attributes = True
-    model_config = ConfigDict(from_attributes=True, arbitrary_types_allowed=True)
+    class Config:
+        from_attributes = True
+    # model_config = ConfigDict(from_attributes=True, arbitrary_types_allowed=True)
 
 class HealthRecordCreate(BaseModel):
     age_years: Optional[int] = None
