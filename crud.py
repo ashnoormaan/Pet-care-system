@@ -180,3 +180,19 @@ def create_health_record(db: Session, pet_id: int, health_data: HealthRecordCrea
     db.commit()
     db.refresh(db_health_record)
     return db_health_record
+
+def delete_user(db: Session, user_id: int):
+    """Deletes a user and their related data from the database."""
+    user = db.query(User).filter(User.id == user_id).first()
+
+    if not user:
+        return False  # User not found
+
+    # Delete reviews first (if cascade is not working)
+    db.query(Review).filter(Review.owner_id == user_id).delete(synchronize_session=False)
+
+    # Delete the user
+    db.delete(user)
+    db.commit()
+    
+    return True

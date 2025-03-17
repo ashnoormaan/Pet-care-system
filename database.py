@@ -15,3 +15,10 @@ def initialize_database():
         os.remove("petcare.db")  # Delete old database
     Base.metadata.create_all(bind=engine)
     
+# Database Dependency
+def get_db():
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()

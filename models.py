@@ -3,15 +3,26 @@ from sqlalchemy.orm import relationship
 from database import Base
 from datetime import datetime
 
+# class User(Base):
+#     __tablename__ = "users"
+
+#     id = Column(Integer, primary_key=True, index=True)
+#     username = Column(String, unique=True, index=True)
+#     hashed_password = Column(String, nullable=False)
+
+#     pets = relationship("Pet", back_populates="owner")
+#     reviews = relationship("Review", back_populates="owner")
+
 class User(Base):
     __tablename__ = "users"
 
     id = Column(Integer, primary_key=True, index=True)
-    username = Column(String, unique=True, index=True)
+    username = Column(String, unique=True, index=True, nullable=False)
     hashed_password = Column(String, nullable=False)
 
     pets = relationship("Pet", back_populates="owner")
-    reviews = relationship("Review", back_populates="owner")
+    reviews = relationship("Review", back_populates="owner", cascade="all, delete")
+
 
 class Pet(Base):
     __tablename__ = "pets"
@@ -19,7 +30,7 @@ class Pet(Base):
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String, nullable=False)
     pet_type = Column(String, nullable=False)
-    owner_id = Column(Integer, ForeignKey("users.id"))
+    owner_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
 
     owner = relationship("User", back_populates="pets")
     health_record = relationship("HealthRecord", back_populates="pet", uselist=False, cascade="all, delete-orphan")
@@ -54,13 +65,12 @@ class Review(Base):
     __tablename__ = "reviews"
 
     id = Column(Integer, primary_key=True, index=True)
-    owner_id = Column(Integer, ForeignKey("users.id"), nullable=False)
-    caregiver_id = Column(Integer, ForeignKey("caregivers.id"), nullable=False)
+    owner_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
+    caregiver_id = Column(Integer, ForeignKey("caregivers.id", ondelete="CASCADE"), nullable=False)
     rating = Column(Integer, nullable=False)
     comment = Column(Text, nullable=True)
-    created_at = Column(DateTime, default=datetime.utcnow)
 
-    owner = relationship("User", back_populates="reviews")
+    owner = relationship("User", back_populates="reviews", passive_deletes=True)
     caregiver = relationship("Caregiver", back_populates="reviews")
 
 class HealthRecord(Base):
